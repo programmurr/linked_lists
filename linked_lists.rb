@@ -7,73 +7,113 @@ class Node
     @value = value
     @next_node = nil
   end
-  end
+end
 
 class LinkedList
-  attr_accessor :head, :tail
+  attr_reader :head
+
   def initialize
     @head = nil
-    @tail = nil
+  end
+
+  def find_tail
+    node = @head
+    return node if node.next_node.nil?
+
+    return node unless node.next_node while (node = node.next_node)
   end
 
   def append(value)
-    node = Node.new(value)
-    if @head.nil?
-      @head = node
-      @tail = node
-    elsif @head.next_node.nil?
-      @head.next_node = node
-      @tail = node
-    elsif !@head.next_node.nil? && @head.next_node == @tail
-      # Recursively solve this?
-      # Have a base return if next_node == nil?
-      # Else, append?
+    if @head
+      find_tail.next_node = Node.new(value)
+    else
+      @head = Node.new(value)
     end
   end
 
   def prepend(value)
-    # Adds a new node containing value to the start of the list
+    node = Node.new(value)
+    node.next_node = @head if @head
+    @head = node
   end
 
   def size
-    # Returns the total number of nodes in the list
+    if @head
+      counter = 1
+      node = @head
+      while node.next_node
+        counter += 1
+        node = node.next_node
+      end
+      counter
+    else
+      0
+    end
   end
 
-  # def head
-  # Returns the first node in the list
-  # end
-
-  # def tail
-  # Returns the last node in the list
-  # end
+  def tail
+    if @head
+      node = @head
+      node = node.next_node while node.next_node
+      node
+    end
+  end
 
   def at(index)
-    # Returns the node at the given index
+    counter = 0
+    node = @head
+    until counter == index
+      node = node.next_node
+      counter += 1
+    end
+    node
   end
 
   def pop
-    # Removes the last element from the list
+    if @head
+      node = @head
+      node = node.next_node while node.next_node.next_node
+      node.next_node = nil
+    end
   end
 
   def contains?(value)
-    # Returns true if the passed in value is in the list and otherwise returns false
+    node = @head
+    while node
+      if node.value == value
+        return true
+      elsif node.value != value
+        node = node.next_node
+      end
+    end
+    false
   end
 
   def find(value)
-    # Returns the index of the node containing value, or nil if not found
+    node = @head
+    counter = 0
+    until node.value == value
+      node = node.next_node
+      counter += 1
+    end
+  rescue NoMethodError
+    nil
+  else
+    counter
   end
 
   def to_s
-    # Represent list objects as strings, so they can be printed out and previewed in the console.
-    # The format should be: ( value ) -> ( value ) -> ( value ) -> nil
+    if @head
+      node = @head
+      while node
+        print "(#{node.value}) -> "
+        node = node.next_node
+      end
+      puts 'nil' if node.nil?
+    else
+      puts 'nil'
+    end
   end
 end
 
 list = LinkedList.new
-p list
-list.append(4)
-p list
-list.append(3)
-p list
-list.append(2)
-p list
